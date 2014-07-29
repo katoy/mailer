@@ -16,8 +16,8 @@ class MyMailer < ActionMailer::Base
     # port:  '587',
     # domain: 'smtp.gmail.com',
     # authentication: 'plain',
-    # user_name: 'your_name@gmail.com',
-    # password: 'your_password',
+    ## user_name: 'your_name@gmail.com',
+    ## password: 'your_password',
   }
   ActionMailer::Base.raise_delivery_errors = true
   ActionMailer::Base.delivery_method = :smtp
@@ -25,14 +25,30 @@ class MyMailer < ActionMailer::Base
   # メールを送信する。
   def self.send_mail(infos)
     def create(infos)
-      mail(
-           from: infos[:from],
-           to: infos[:to],
-           subject: infos[:subject],
-           body: infos[:body],
-           cc: infos[:cc],
-           bcc: infos[:bcc],
-           )
+      ret = mail(
+                 from: infos[:from],
+                 to: infos[:to],
+                 subject: infos[:subject],
+                 cc: infos[:cc],
+                 bcc: infos[:bcc],
+                 # body: infos[:body],
+                 content_type: "multipart/mixed",
+                 )
+      ret.part "test/plain" do |p|
+        p.body = infos[:body]
+        p.charset = 'UTF-8'
+      end
+
+      if infos[:files]
+        infos[:files].each do |info|
+          if info[:inline]
+            attachments.inline[info[:name]] = info[:content]
+          else
+            attachments[info[:name]] = info[:content]
+          end
+        end
+      end
+      ret
     end
 
     message = create(infos)
@@ -49,6 +65,12 @@ if __FILE__ == $PROGRAM_NAME
     body: 'テストメール本文',
     cc: [],
     bcc: ['youichikato@gmail.com'],
+    files: [
+            { name: 'test.txt', content: 'xxxxxxx'},
+            { name: 'test.png',
+              content: File.read(File.join(File.expand_path(File.dirname(__FILE__)), '..', 'sample', 'fish.png'))
+            },
+           ]
   }
   MyMailer.send_mail infos
 

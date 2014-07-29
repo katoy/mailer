@@ -38,7 +38,7 @@ describe 'MailcatcherDriver start/stop' do
     expect(json[0]['sender']).to eq('<foo_from@example.com>')
     expect(json[0]['recipients']).to eq(['<foo_to@example.com>'])
     expect(json[0]['subject']).to eq('テストメール Subject')
-    expect(json[0]['type']).to eq('text/plain')
+    expect(json[0]['type']).to eq('multipart/mixed')
     expect(json[0]['formats']).to eq(%w(source plain))
   end
 

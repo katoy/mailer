@@ -94,10 +94,18 @@ class MailcatcherDriver
     ans
   end
 
-  #
-  def attaced(id, cid)
-    response = RestClient.get "#{@usrl}/messages/#{id}/#{cid}"
-    response.body
+   # 添付ファイル情報　(:cid, :type, filename, size, href) の配列を得る
+  def attacheds(id)
+    json = JSON.parse(RestClient.get "#{@url}/messages/#{id}.json")
+    ans = []
+    ans = json['attachments'] if json['attachments']
+    ans
+  end
+
+  # 添付ファイルを得る
+  def attached(id, cid)
+    response = RestClient.get "#{@url}/messages/#{id}/parts/#{cid}"
+    response
   end
 end
 

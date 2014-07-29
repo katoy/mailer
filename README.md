@@ -3,7 +3,7 @@
 
     $ bundle install
     $ mkdir -p spec/{features,steps}
-    $ emacs .rspec
-	  -r turnip/rspec
+    $ bundle exec ruby sample/sample-00.rb
+	$ bundle exec rspec
 	
 //--- End of File ---

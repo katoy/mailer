@@ -44,8 +44,36 @@ ap mc.response_get 'http://localhost:1080//messages'
 puts '--------------------------- clear'
 ap mc.clear
 
+# 添付ファイル付きのメールを送る
+mail_infos[:files] =[
+                     { name: 'test-001.txt', content:  '添付ファイルの内容' },
+                     { name: 'fish.png',
+                       content: File.read(File.join(File.expand_path(File.dirname(__FILE__)), '..', 'sample', 'fish.png'))}
+                    ]
+MyMailer.send_mail mail_infos
+
+puts '--------------------------- 添付ファイル付きのメール'
 puts '--------------------------- ids'
 ap mc.ids
+
+# 本文を得る
+puts '--------------------------- messages plain'
+ap mc.message :plain, [1]
+
+# 添付ファイルを得る
+puts '--------------------------- attacheds'
+attacheds = mc.attacheds 1
+ap attacheds
+
+attacheds.each do |at|
+  puts "-------- #{at['filename']} ------"
+  cont = mc.attached 1, at['cid']
+  if at['type'] == 'text/plain'
+    ap cont.toutf8
+  else
+    ap "#{cont}"[0..60] + " ... (snip) size: #{at['size']}"
+  end
+end
 
 puts '--------------------------- quit'
 ap mc.quit
