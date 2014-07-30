@@ -1,6 +1,6 @@
 
 [![Build Status](https://travis-ci.org/katoy/mailer.png?branch=master)](https://travis-ci.org/katoy/mailer)
-[![Dependency Status](https://gemnasium.com/katoy/mailr.png)](https://gemnasium.com/katoy/mailer)
+[![Dependency Status](https://gemnasium.com/katoy/mailer.png)](https://gemnasium.com/katoy/mailer)
 [![Coverage Status](https://coveralls.io/repos/katoy/mailer/badge.png)](https://coveralls.io/r/katoy/mailer)
 
 
