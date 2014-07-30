@@ -25,21 +25,32 @@ class MyMailer < ActionMailer::Base
   # メールを送信する。
   def self.send_mail(infos)
     def create(infos)
-      ret = mail(
-                 from: infos[:from],
-                 to: infos[:to],
-                 subject: infos[:subject],
-                 cc: infos[:cc],
-                 bcc: infos[:bcc],
-                 # body: infos[:body],
-                 content_type: "multipart/mixed",
-                 )
-      ret.part "test/plain" do |p|
-        p.body = infos[:body]
-        p.charset = 'UTF-8'
-      end
-
-      if infos[:files]
+      ret = nil
+      unless infos[:files]
+        # 添付ファイルが無い場合
+        ret = mail(
+                   from: infos[:from],
+                   to: infos[:to],
+                   subject: infos[:subject],
+                   cc: infos[:cc],
+                   bcc: infos[:bcc],
+                   body: infos[:body],
+                   content_type: "text/plain",
+                   )
+      else
+        # 添付ファイルがある場合は multipart にする。
+        ret = mail(
+                   from: infos[:from],
+                   to: infos[:to],
+                   subject: infos[:subject],
+                   cc: infos[:cc],
+                   bcc: infos[:bcc],
+                   content_type: "multipart/mixed",
+                   )
+        ret.part "test/plain" do |p|
+          p.body = infos[:body]
+          p.charset = 'UTF-8'
+        end
         infos[:files].each do |info|
           if info[:inline]
             attachments.inline[info[:name]] = info[:content]
