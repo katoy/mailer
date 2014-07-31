@@ -12,4 +12,9 @@
 text, png, pdf を添付ファイルとしたメールを activemailer で送信し、 mailcather からメールデータを取得して、
 その内容をチェックするテストを rspec で実行できるようにしてある。
 
+TODO:
+
+- jenkns との連携
+- mailcatcher のスクリーンショットを撮る事。
+
 //--- End of File ---
