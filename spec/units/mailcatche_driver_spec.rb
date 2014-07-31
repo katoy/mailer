@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+require 'tempfile'
 require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'spec_helper.rb')
 
 describe 'MailcatcherDriver start/stop' do
@@ -24,7 +25,9 @@ describe 'MailcatcherDriver start/stop' do
       files: [
               { name: 'test-002.txt', content:  '添付ファイルの内容2' },
               { name: 'fish.png',
-                content: File.read(File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'sample', 'fish.png'))}
+                content: File.read(File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'sample', 'fish.png'))},
+              { name: 'type_a.pdf',
+                content: File.read(File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'sample', 'type_a.pdf'))},
              ],
     }.freeze
   end
@@ -60,6 +63,7 @@ describe 'MailcatcherDriver start/stop' do
     @mc.clear
 
     MyMailer.send_mail @mail_infos2
+
     ids = @mc.ids
     expect(ids.size).to eq(1)
     expect(@mc.message :plain, [ids[-1]]).to eq(["テストメール本文10\n本文20"])
@@ -73,15 +77,51 @@ describe 'MailcatcherDriver start/stop' do
     expect(json[0]['formats']).to eq(%w(source plain))
 
     attacheds = @mc.attacheds 1
-    expect(attacheds.size).to eq(2)
-    expect(attacheds[0]['type']).to eq('image/png')
+    expect(attacheds.size).to eq(3)
     expect(attacheds[0]['filename']).to eq('fish.png')
+    expect(attacheds[0]['type']).to eq('image/png')
     expect(attacheds[0]['size']).to eq(37477)
 
-    expect(attacheds[1]['type']).to eq('text/plain')
+    # 1 番目の添付ファイル内容をメモリー上で比較する
+    f_name = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'sample', 'fish.png')
+    f_data = File.read(f_name).unpack("C*")
+    m_data = @mc.attached(1, attacheds[0]['cid']).unpack("C*")
+    expect(m_data).to eq(f_data)
+    expect(m_data.size).to eq(37477)
+
+    # 1 番目の添付ファイルを一時ファイルに書き出して、内容をチェックする。
+    temp = Tempfile::new(['fish', '.png'])
+    temp.binmode
+    temp.write @mc.attached(1, attacheds[0]['cid'])
+    temp.close
+    expect(File.binread(temp.path)).to eq(File.binread(f_name))
+
+    # 2 番目の添付ファイルの情報をチェックする。
     expect(attacheds[1]['filename']).to eq('test-002.txt')
+    expect(attacheds[1]['type']).to eq('text/plain')
     expect(attacheds[1]['size']).to eq(28)
-  end
+
+    # 2 番目の添付ファイルを一時ファイルに書き出して、内容をチェックする。
+    temp = Tempfile::new(['test-002', '.txt'])
+    temp.binmode
+    temp.write @mc.attached(1, attacheds[1]['cid'])
+    temp.close
+    expect(File.read(temp.path)).to eq('添付ファイルの内容2')
+
+    # 3 番目の添付ファイルの情報をチェックする。
+    expect(attacheds[2]['filename']).to eq('type_a.pdf')
+    expect(attacheds[2]['type']).to eq('application/pdf')
+    expect(attacheds[2]['size']).to eq(451933)
+
+    # 3 番目の添付ファイルを一時ファイルに書き出して、内容をチェックする。
+    temp = Tempfile::new(['type_a', '.pdf'])
+    temp.binmode
+    temp.write @mc.attached(1, attacheds[2]['cid'])
+    temp.close
+
+    f_name = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'sample', 'type_a.pdf')
+    expect(File.binread(temp.path)).to eq(File.binread(f_name))
+end
 
   it 'clear all messages' do
     @mc.clear
