@@ -5,6 +5,7 @@ require 'json'
 require 'awesome_print'
 require 'open3'
 require 'kconv'
+require 'uri'
 
 class MailcatcherDriver
   # Initializer.
@@ -64,7 +65,7 @@ class MailcatcherDriver
   def ids
     ids = []
     all_messages.each { |m| ids << m['id'] }
-    ids
+    ids.sort
   end
 
   # Get all messages.
@@ -104,7 +105,7 @@ class MailcatcherDriver
 
   # 添付ファイルを得る
   def attached(id, cid)
-    response = RestClient.get "#{@url}/messages/#{id}/parts/#{cid}"
+    response = RestClient.get "#{@url}/messages/#{id}/parts/#{URI.encode(cid)}"
     response
   end
 end

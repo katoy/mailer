@@ -12,9 +12,23 @@
 text, png, pdf を添付ファイルとしたメールを activemailer で送信し、 mailcather からメールデータを取得して、
 その内容をチェックするテストを rspec で実行できるようにしてある。
 
-TODO:
+# 備考
 
-- jenkns との連携
+次の方法で、mailcatcher に swks でメールを送ることが可能。
+(swaks  は MacOS なら 'brew install swaks' でインストールできる)
+
+    $ swaks -f youichikato@example.com -t youichikato@example.com -s localhost -p 1025
+    $ swaks -f youichikato@example.com -t youichikato@example.com -s localhost -p 1025 --attach sample/fish.png
+
+次の方法で、 mailcatcher に get, delete などのリクエストを送ることができる。
+
+    $ restclient
+	> RestClient.get "http://localhost:1080/messages"
+    > RestClient.delete "http://localhost:1080/messages"
+
+# TODO:
+
+- jenkins との連携
 - mailcatcher のスクリーンショットを撮る事。
 
 //--- End of File ---

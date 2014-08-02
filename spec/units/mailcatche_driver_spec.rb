@@ -132,7 +132,7 @@ end
       MyMailer.send_mail @mail_infos2
     end
     sleep 1
-    expect(@mc.ids.sort).to eq([1,2,3,4,5,6,7,8])
+    expect(@mc.ids).to eq([1,2,3,4,5,6,7,8])
 
     res = @mc.clear
     expect(res).to eq(204)
@@ -140,33 +140,33 @@ end
   end
 
   it 'delete mail' do
-    pending 'delete_message return 500, Why?'
+    @mc.clear
+    expect(@mc.ids).to eq([])
 
     MyMailer.send_mail @mail_infos
     MyMailer.send_mail @mail_infos
     MyMailer.send_mail @mail_infos
     MyMailer.send_mail @mail_infos
-    sleep 2
 
     ids = @mc.ids.freeze
-    expect(@mc.ids).to eq([1, 2, 3, 4])
+    expect(ids).to eq([1, 2, 3, 4])
 
     # 2 番目のメールを削除する
-    sleep 0.5
-    res = @mc.delete_messages [2]
+    res = @mc.delete_messages [ids[1]]
+ap res
+pending 'delete_message return 500, Why?'''
     expect(res).to eq([200])
     expect(@mc.ids).to eq([1, 3, 4])
 
     # 1 番目のメールを削除する
-    sleep 0.5
-    res = @mc.delete_messages [1]
+    res = @mc.delete_messages [ids[0]]
     expect(res).to eq([200])
     expect(@mc.ids).to eq([3, 4])
 
   end
 
   # it 'after send mail with attachment' do
-  #  pending 'not yet'
+  #  skip 'not yet'
   # end
 
 end
