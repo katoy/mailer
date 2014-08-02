@@ -14,14 +14,14 @@ describe 'MailcatcherDriver start/stop' do
       from: 'foo_from@example.com',
       to:  'foo_to@example.com',
       subject: 'テストメール Subject',
-      body: "テストメール本文1\n本文2",
+      body: 'テストメール本文1\n本文2',
     }.freeze
 
     @mail_infos2 = {
       from: 'foo_from2@example.com',
       to:  'foo_to2@example.com',
       subject: 'テストメール Subject2',
-      body: "テストメール本文10\n本文20",
+      body: 'テストメール本文10\n本文20',
       files: [
               { name: 'test-002.txt', content:  '添付ファイルの内容2' },
               { name: 'fish.png',
@@ -48,7 +48,7 @@ describe 'MailcatcherDriver start/stop' do
     MyMailer.send_mail @mail_infos
     ids = @mc.ids
     expect(ids.size).to eq(count + 1)
-    expect(@mc.message :plain, [ids[-1]]).to eq(["テストメール本文1\n本文2"])
+    expect(@mc.message :plain, [ids[-1]]).to eq(['テストメール本文1\n本文2'])
 
     json = @mc.message :json,  [ids[-1]]
     expect(json[0]['id']).to eq(1)
@@ -66,7 +66,7 @@ describe 'MailcatcherDriver start/stop' do
 
     ids = @mc.ids
     expect(ids.size).to eq(1)
-    expect(@mc.message :plain, [ids[-1]]).to eq(["テストメール本文10\n本文20"])
+    expect(@mc.message :plain, [ids[-1]]).to eq(['テストメール本文10\n本文20'])
 
     json = @mc.message :json,  [ids[-1]]
     expect(json[0]['id']).to eq(1)
@@ -84,8 +84,8 @@ describe 'MailcatcherDriver start/stop' do
 
     # 1 番目の添付ファイル内容をメモリー上で比較する
     f_name = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'sample', 'fish.png')
-    f_data = File.read(f_name).unpack("C*")
-    m_data = @mc.attached(1, attacheds[0]['cid']).unpack("C*")
+    f_data = File.read(f_name).unpack('C*')
+    m_data = @mc.attached(1, attacheds[0]['cid']).unpack('C*')
     expect(m_data).to eq(f_data)
     expect(m_data.size).to eq(37477)
 
@@ -165,8 +165,8 @@ end
 
   end
 
-  # it "after send mail with attachment" do
-  #  pending "not yet"
+  # it 'after send mail with attachment' do
+  #  pending 'not yet'
   # end
 
 end

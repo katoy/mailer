@@ -1,6 +1,9 @@
 # coding: utf-8
 
 require 'action_mailer'
+require 'action_view'
+
+ActionMailer::Base.prepend_view_path File.join(File.expand_path(File.dirname(__FILE__)), '..')
 
 class MyMailer < ActionMailer::Base
   # mailcatcher  を利用する設定
@@ -46,6 +49,8 @@ class MyMailer < ActionMailer::Base
                    cc: infos[:cc],
                    bcc: infos[:bcc],
                    content_type: "multipart/mixed",
+                   template_path: 'templates',
+                   template_name: 'mailer',
                    )
         ret.part "test/plain" do |p|
           p.body = infos[:body]

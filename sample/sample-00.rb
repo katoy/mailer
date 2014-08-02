@@ -41,10 +41,12 @@ puts '--------------------------- response get'
 ap mc.response_get 'http://localhost:1080//messages'
 
 # メールを全て削除する
-puts '--------------------------- clear'
-ap mc.clear
+#puts '--------------------------- clear'
+#ap mc.clear
 
 # 添付ファイル付きのメールを送る
+mail_infos[:subject] =  'テストメール Subject (添付ファイル有り)'
+mail_infos[:body] = 'テストメール本文 (添付ファイル有り)'
 mail_infos[:files] =[
                      { name: 'test-001.txt', content:  '添付ファイルの内容' },
                      { name: 'fish.png',
@@ -62,16 +64,18 @@ ap mc.message :plain, [1]
 
 # 添付ファイルを得る
 puts '--------------------------- attacheds'
-attacheds = mc.attacheds 1
+attacheds = mc.attacheds 2
 ap attacheds
 
 attacheds.each do |at|
-  puts "-------- #{at['filename']} ------"
-  cont = mc.attached 1, at['cid']
+  puts "--------添付ファイル: #{at['filename']} ------"
+  ap at
+  cont = mc.attached 2, at['cid']
   if at['type'] == 'text/plain'
     ap cont.toutf8
   else
-    ap "#{cont}"[0..60] + " ... (snip) size: #{at['size']}"
+    ap "#{cont}"[0..10] + " ..."
+    ap "#{cont.unpack('C*')[0..60]}" + " ... (snip) size: #{at['size']}"
   end
 end
 

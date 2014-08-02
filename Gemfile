@@ -1,8 +1,11 @@
 # A sample Gemfile
 source "https://rubygems.org"
 
-gem 'mailcatcher'
-gem 'rails'
+# gem "mailcatcher", github: "sj26/mailcatcher"
+gem 'mailcatcher', '>= 0.5.0'
+
+gem 'rails', '>=3.0.0'
+gem 'railties'
 
 # gem 'faraday'
 gem 'rest-client'
